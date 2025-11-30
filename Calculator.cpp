@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <cstring>
+#include <cmath>
 
 int end_end;
 int start_end;
@@ -9,7 +10,7 @@ int end_start;
 int from;
 int length;
 int how_many = 0;
-int oper[5];
+int oper[6];
 int ind = 0;
 bool divi_zero = false;
 
@@ -51,6 +52,125 @@ int substract(int first, int second){
 double change(char inp[]);
 
 int looking(char inp[]);
+
+double four(double first, double second){
+    return first / second;
+}
+
+void sort_op(int here){
+    for (int i = here; i < how_many; i++){
+        oper[i] = oper[i + 1];
+    }
+}
+
+void sort_num(int here, double numbers[], int sum){
+    numbers[here] = sum;
+    for (int i = here + 1; i < how_many; i++){
+        numbers[i] = numbers[i + 1];
+    }
+    how_many--;
+}
+
+double idk(double numbers[], int oper[]){
+    double all_sum = numbers[0];
+    double sec_sum = 0;
+    int other = 0;
+
+    for (int j = 3; j > 0; j--){
+        for (int i = how_many - 1; i >= 0; i--){
+            // std::cout << "enter loop " << i << std::endl;
+            //std::cout << "oper  " << oper[i] << std::endl;
+            // std::cout << "how many  " << how_many << std::endl;
+            if(oper[i] == 5 && j == 3){
+                numbers[i] = pow(numbers[i], numbers[i + 1]);
+                for (int k = i; k < how_many; k++){
+                    oper[k] = oper[k + 1];
+                }
+                for (int k = i + 1; k < how_many; k++){
+                    numbers[k] = numbers[k + 1];
+                }
+                how_many--;
+            }else if(oper[i] == 4 || oper[i] == 3 && j == 2){
+                // std::cout << "enter if statment" << std::endl; 
+                int tail = i;
+                while ((oper[i - 1] == 4 || oper[i - 1] == 3) && i >= 0){
+                    i--;
+                    // std::cout << "the loop " << i << std::endl; 
+                }
+                int head = i;
+                int here = head;
+                
+                double sum;
+
+                sum = numbers[head];
+                head++;
+                while (here != tail + 1){
+                    int sec = numbers[head];
+                    if (oper[i] == 3){
+                        sum = sum * sec;
+                    }else{
+                        sum = sum / sec;
+                    }
+                    
+                    for (int i = here; i < how_many; i++){
+                        oper[i] = oper[i + 1];
+                    }
+                    
+                    numbers[here] = sum;
+                    
+                    for (int i = here + 1; i < how_many; i++){
+                        numbers[i] = numbers[i + 1];
+                    }
+                    how_many--;
+                    tail--;
+                }
+            }else if((oper[i] == 1 || oper[i] == 2) && j == 1){
+                int tail = i;
+                while ((oper[i - 1] == 1 || oper[i - 1] == 2) && i >= 0){
+                    i--;
+                    // std::cout << "the loop " << i << std::endl;
+                }
+                int head = i;
+                int here = head;
+
+                double sum;
+                
+                sum = numbers[head];
+                head++;
+                while (here != tail + 1){
+                    int sec = numbers[head];
+                    if (oper[i] == 1){
+                        // std::cout << "sec " << sec << std::endl;
+                        sum = sum + sec;
+                        // std::cout << "+ " << sum << std::endl;
+                    }else{
+                        sum = sum - sec;
+                    }
+                    
+                    for (int i = here; i < how_many; i++){
+                        oper[i] = oper[i + 1];
+                    }
+                    
+                    numbers[here] = sum;
+                    
+                    for (int i = here + 1; i < how_many; i++){
+                        numbers[i] = numbers[i + 1];
+                    }
+                    how_many--;
+                    tail--;
+                    // std::cout << "tail " << tail << std::endl;
+                
+                }
+            }
+        }
+    }
+
+    return numbers[0];
+}
+
+double agwas(double numbers[], int oper[]){
+    return 0;
+}
 
 double all(double numbers[], int oper[]){
     double all_sum = numbers[0];
@@ -108,8 +228,8 @@ double all(double numbers[], int oper[]){
             if ((oper[i + 1] == 5 || oper[i + 1] == 4 || oper[i + 1] == 3) && i < how_many - 1){
                 int now = i + 1;
                 int sq = 0;
-                third = numbers[i + 1];
-                second = numbers[now + 1];
+                second = numbers[now + 2];
+                third = numbers[now + 1];
                 //std::cout << "first" << std::endl;
                 while ((oper[now] == 5 || oper[now] == 4 || oper[now] == 3) && now < how_many - 1){
                     if (oper[now] == 5){
@@ -325,9 +445,21 @@ int main(){
 
     for (size_t i = 0; i < how_many; i++){
         the[i] = looking(in);
+        // std::cout << "the oper is: " << the[i] << std::endl;
     }
 
-    double sum = all(value, the); 
+    double sum;
+
+    /*
+    for (int i = 1; i < 4; i++){
+        double sum = sec_idk(value, the, i);
+    }
+    */
+    
+    //std::cout << "the sum is: " << sum << std::endl;
+
+    //double sum = all(value, the); 
+    sum = idk(value, the); 
     
     std::cout << "the sum is: " << sum << std::endl;
     
@@ -408,7 +540,7 @@ bool errors(char inp[]){
                 op++;
                 so = false;
             }
-        }else if(inp[i] == '+' || inp[i] == '-' || inp[i] == '*' || inp[i] == '/' || inp[i] == '^'){            
+        }else if(inp[i] == '+' || inp[i] == '-' || inp[i] == '*' || inp[i] == '/' || inp[i] == '^' || inp[i] == '(' || inp[i] == ')'){            
             number = false;
             count++;
             how_many++;
@@ -426,6 +558,8 @@ bool errors(char inp[]){
                 oper[3]++;
             }else if (inp[i] == '^'){
                 oper[4]++;
+            }else if (inp[i] == '(' || inp[i] == ')'){
+                oper[5]++;
             }
         }else if(inp[i] == ' '){
             if (so == false){
@@ -455,6 +589,9 @@ bool errors(char inp[]){
     }
 
     if (error == true){
+        return true;
+    }else if(oper[5] % 2 != 0){
+        std::cout << "Error: unbalanced parentheses" << std::endl;
         return true;
     }
 
