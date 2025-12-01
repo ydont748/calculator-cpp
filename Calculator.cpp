@@ -13,6 +13,8 @@ int how_many = 0;
 int oper[6];
 int ind = 0;
 bool divi_zero = false;
+int number_length = 0;
+int oper_length = 0;
 
 /*
     i want to make an array that have how many operation that i have so i know that i finish this operation or not 
@@ -166,6 +168,103 @@ double idk(double numbers[], int oper[]){
     }
 
     return numbers[0];
+}
+
+double quowsin(double numbers[], int oper[], int start, int end){
+    double all_sum = numbers[0];
+    double sec_sum = 0;
+    int other = 0;
+
+    for (int j = 3; j > 0; j--){
+        for (int i = end - 1; i >= start; i--){
+            // std::cout << "enter loop " << i << std::endl;
+            //std::cout << "oper  " << oper[i] << std::endl;
+            // std::cout << "how many  " << how_many << std::endl;
+            if(oper[i] == 5 && j == 3){
+                numbers[i] = pow(numbers[i], numbers[i + 1]);
+                for (int k = i; k < how_many; k++){
+                    oper[k] = oper[k + 1];
+                }
+                for (int k = i + 1; k < how_many; k++){
+                    numbers[k] = numbers[k + 1];
+                }
+                how_many--;
+            }else if(oper[i] == 4 || oper[i] == 3 && j == 2){
+                // std::cout << "enter if statment" << std::endl; 
+                int tail = i;
+                while ((oper[i - 1] == 4 || oper[i - 1] == 3) && i >= 0){
+                    i--;
+                    // std::cout << "the loop " << i << std::endl; 
+                }
+                int head = i;
+                int here = head;
+                
+                double sum;
+
+                sum = numbers[head];
+                head++;
+                while (here != tail + 1){
+                    int sec = numbers[head];
+                    if (oper[i] == 3){
+                        sum = sum * sec;
+                    }else{
+                        sum = sum / sec;
+                    }
+                    
+                    for (int i = here; i < how_many; i++){
+                        oper[i] = oper[i + 1];
+                    }
+                    
+                    numbers[here] = sum;
+                    
+                    for (int i = here + 1; i < how_many; i++){
+                        numbers[i] = numbers[i + 1];
+                    }
+                    how_many--;
+                    tail--;
+                }
+            }else if((oper[i] == 1 || oper[i] == 2) && j == 1){
+                int tail = i;
+                while ((oper[i - 1] == 1 || oper[i - 1] == 2) && i >= 0){
+                    i--;
+                    // std::cout << "the loop " << i << std::endl;
+                }
+                int head = i;
+                int here = head;
+
+                double sum;
+                
+                sum = numbers[head];
+                head++;
+                while (here != tail + 1){
+                    int sec = numbers[head];
+                    if (oper[i] == 1){
+                        // std::cout << "sec " << sec << std::endl;
+                        sum = sum + sec;
+                        // std::cout << "+ " << sum << std::endl;
+                    }else{
+                        sum = sum - sec;
+                    }
+                    
+                    for (int i = here; i < how_many; i++){
+                        oper[i] = oper[i + 1];
+                    }
+                    
+                    numbers[here] = sum;
+                    
+                    for (int i = here + 1; i < how_many; i++){
+                        numbers[i] = numbers[i + 1];
+                    }
+                    how_many--;
+                    tail--;
+                    // std::cout << "tail " << tail << std::endl;
+                
+                }
+            }
+        }
+    }
+
+    return numbers[start];
 }
 
 double agwas(double numbers[], int oper[]){
@@ -424,25 +523,29 @@ int main(){
     length = input.length();
     
     char in[length + 1];
-    int done[length + 1];
+    //int done[length + 1];
 
     strcpy(in, input.c_str());
     
+    // this part is to check for errors in the input
     bool error = errors(in);
     
+    // this end the code here if there is an error
     if (error == true){
         return 1;
     }
 
     double value[how_many + 1];
     int the[how_many];
-    
+
+    // this change the char to numbers and store them in an array
     for (size_t i = 0; i < how_many + 1; i++){
         value[i] = change(in);
     }
     
     ind = 0;
 
+    // this look for the operation and store them in an array
     for (size_t i = 0; i < how_many; i++){
         the[i] = looking(in);
         // std::cout << "the oper is: " << the[i] << std::endl;
@@ -455,6 +558,31 @@ int main(){
         double sum = sec_idk(value, the, i);
     }
     */
+
+    int start_quowse = 0;
+    int end_quowse = 0;
+
+    while (oper[6] != 0){
+        for (size_t i = 0; i < how_many; i++){
+            if (the[i] == 6){
+                start_quowse = i;
+                oper[6]--;
+            }else if (the[i] == 7){
+                end_quowse = i;
+                oper[6]--;
+                value[start_quowse] = quowsin(value, the, start_quowse + 1, end_quowse);
+                for (size_t i = start_quowse; i < end_quowse; i++){
+                    // here i should look if there is any operation before and after the parentheses
+                    // if there is not should make it multiplication
+                    
+                    the[i] = the[i + 1];
+                }
+                
+                break;
+            }
+        }
+    }
+    
     
     //std::cout << "the sum is: " << sum << std::endl;
 
@@ -500,6 +628,14 @@ int looking(char inp[]){
             then = 5;
             ind = i + 1;
             break;
+        }else if(inp[i] == '('){
+            then = 6;
+            ind = i + 1;
+            break;
+        }else if(inp[i] == ')'){
+            then = 7;
+            ind = i + 1;
+            break;
         }
     }
 
@@ -533,6 +669,7 @@ bool errors(char inp[]){
         if ((inp[i] >= 48 && inp[i] <= 57)){
             count = 0;
             number = true;
+            number_length++;
             if(num - how_many == 0){
                 num++;
             }
@@ -544,6 +681,7 @@ bool errors(char inp[]){
             number = false;
             count++;
             how_many++;
+            oper_length++;
             so = true;
             op = 0;
             if (inp[i] == '+'){
