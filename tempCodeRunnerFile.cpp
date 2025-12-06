@@ -1,3 +1,4 @@
-or (int i = 1; i < 4; i++){
-        double sum = sec_idk(value, the, i);
-    }
+if (start == 0){
+            // }else{
+            //     auto[num, sum] = quowsin(numbers, opera, start + 1, i);
+            // }

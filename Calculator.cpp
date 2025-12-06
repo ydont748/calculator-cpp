@@ -2,6 +2,7 @@
 #include <string>
 #include <cstring>
 #include <cmath>
+#include <tuple>
 
 int end_end;
 int start_end;
@@ -15,6 +16,7 @@ int ind = 0;
 bool divi_zero = false;
 int number_length = 0;
 int oper_length = 0;
+int paranth_here = 0;
 
 /*
     i want to make an array that have how many operation that i have so i know that i finish this operation or not 
@@ -170,10 +172,8 @@ double idk(double numbers[], int oper[]){
     return numbers[0];
 }
 
-double quowsin(double numbers[], int oper[], int start, int end){
-    double all_sum = numbers[0];
-    double sec_sum = 0;
-    int other = 0;
+std::tuple<double, int> quowsin(double numbers[], int oper[], int start, int end){
+    int john = how_many;
 
     for (int j = 3; j > 0; j--){
         for (int i = end - 1; i >= start; i--){
@@ -182,13 +182,13 @@ double quowsin(double numbers[], int oper[], int start, int end){
             // std::cout << "how many  " << how_many << std::endl;
             if(oper[i] == 5 && j == 3){
                 numbers[i] = pow(numbers[i], numbers[i + 1]);
-                for (int k = i; k < how_many; k++){
+                for (int k = i; k < john; k++){
                     oper[k] = oper[k + 1];
                 }
-                for (int k = i + 1; k < how_many; k++){
+                for (int k = i + 1; k < john; k++){
                     numbers[k] = numbers[k + 1];
                 }
-                how_many--;
+                john--;
             }else if(oper[i] == 4 || oper[i] == 3 && j == 2){
                 // std::cout << "enter if statment" << std::endl; 
                 int tail = i;
@@ -211,16 +211,16 @@ double quowsin(double numbers[], int oper[], int start, int end){
                         sum = sum / sec;
                     }
                     
-                    for (int i = here; i < how_many; i++){
+                    for (int i = here; i < john; i++){
                         oper[i] = oper[i + 1];
                     }
                     
                     numbers[here] = sum;
                     
-                    for (int i = here + 1; i < how_many; i++){
+                    for (int i = here + 1; i < john; i++){
                         numbers[i] = numbers[i + 1];
                     }
-                    how_many--;
+                    john--;
                     tail--;
                 }
             }else if((oper[i] == 1 || oper[i] == 2) && j == 1){
@@ -246,16 +246,16 @@ double quowsin(double numbers[], int oper[], int start, int end){
                         sum = sum - sec;
                     }
                     
-                    for (int i = here; i < how_many; i++){
+                    for (int i = here; i < john; i++){
                         oper[i] = oper[i + 1];
                     }
                     
                     numbers[here] = sum;
                     
-                    for (int i = here + 1; i < how_many; i++){
+                    for (int i = here + 1; i < john; i++){
                         numbers[i] = numbers[i + 1];
                     }
-                    how_many--;
+                    john--;
                     tail--;
                     // std::cout << "tail " << tail << std::endl;
                 
@@ -264,11 +264,7 @@ double quowsin(double numbers[], int oper[], int start, int end){
         }
     }
 
-    return numbers[start];
-}
-
-double agwas(double numbers[], int oper[]){
-    return 0;
+    return {numbers[start], how_many - john};
 }
 
 double all(double numbers[], int oper[]){
@@ -514,6 +510,55 @@ double all(double numbers[], int oper[]){
     return all_sum;
 }
 
+std::tuple<double, int, int ,int ,int, int> oper_parantheses(char all[], double numbers[], int opera[]){
+    int val = oper[5];
+    bool number = false;
+    bool prak = true;
+    int i = 0;
+    int start;
+    int sum;
+    int end;
+    bool multi = false;
+    double num;
+    while (val != 0){
+        if(all[i] >= 48 && all[i] <= 57){
+            number = true;
+            prak = false;
+        }else if((all[i] == '+' || all[i] == '-' || all[i] == '*' || all[i] == '/' || all[i] == '^')){
+            number = false;
+            prak = false;
+        }else if(all[i] == '('){
+            start = i;
+            if (number == true && prak == false){
+                multi = true;
+            }else if (prak == true){
+                multi = false;
+            }
+            //val--;
+            number = false;
+            prak = true;
+        }else if(all[i] == ')'){
+            // if (start == 0){
+            // }else{
+            //     auto[num, sum] = quowsin(numbers, opera, start + 1, i);
+            // }
+            auto[num, sum] = quowsin(numbers, opera, start + 1, i);
+            
+            val-=2;
+            number = false;
+            prak = false;
+            if (multi == true){
+                return {num, start, i, 3, start + 1, sum};
+            }else{
+                return {num, start, i, opera[start], start, sum};
+            }
+        }
+        i++;
+    }
+    
+    return {num, start, i, opera[start], start, sum};
+}
+
 int main(){
     std::string input;
     
@@ -561,7 +606,45 @@ int main(){
 
     int start_quowse = 0;
     int end_quowse = 0;
+    double val_n;
+    int sn;
+    int op_val;
+    int so;
+    int e;
+    int eh;
+    
+    if(oper[5] != 0){
+        // std::cout << "enter parantheses" << std::endl;
+        auto [val_n, sn, e, op_val, so, eh] = oper_parantheses(in, value, the);
+        std::cout << "the val_n is: " << val_n << " sn: " << sn << " e: " << e << " op_val: " << op_val << " so: " << so <<std::endl;
+        value[sn] = val_n;
+        // std::cout << "the how many is: " << how_many - e << std::endl;
+        for (int i = 1; i < eh; i++){
+            // std::cout << "i in first loop = " << i << std::endl;
+            value[sn + i] = value[e + i];
+        }
+        if (op_val == 3){
+            the[so] = 3;
+            for (int i = 1; i < eh; i++){
+                the[so + i] = the[e + i];
+            }
+        }else{
+            for (int i = 0; i < eh; i++){
+                the[so + i] = the[e + i + 1];
+            }
+        }
+        
+        how_many = eh;
+    }
 
+    std::cout << "number 0: " << value[0] << std::endl;
+    std::cout << "number 1: " << value[1] << std::endl;
+    std::cout << "number 2: " << value[2] << std::endl;
+    std::cout << "oper 0: " << the[0] << std::endl;
+    std::cout << "oper 1: " << the[1] << std::endl; 
+    std::cout << "how many: " << how_many << std::endl;
+
+    /*
     while (oper[6] != 0){
         for (size_t i = 0; i < how_many; i++){
             if (the[i] == 6){
@@ -582,6 +665,7 @@ int main(){
             }
         }
     }
+    */
     
     
     //std::cout << "the sum is: " << sum << std::endl;
@@ -663,26 +747,30 @@ bool errors(char inp[]){
     int count = 0;
     int op = 0;
     int num = 0;
+    int prak_count = 0;
     bool number = true;
+    bool prak = false;
     
     for (size_t i = 0; i < length; i++){
         if ((inp[i] >= 48 && inp[i] <= 57)){
             count = 0;
             number = true;
+            prak = false;
             number_length++;
-            if(num - how_many == 0){
+            if((num + prak_count) - how_many == 0){
                 num++;
             }
             if (so == true){
                 op++;
                 so = false;
             }
-        }else if(inp[i] == '+' || inp[i] == '-' || inp[i] == '*' || inp[i] == '/' || inp[i] == '^' || inp[i] == '(' || inp[i] == ')'){            
+        }else if(inp[i] == '+' || inp[i] == '-' || inp[i] == '*' || inp[i] == '/' || inp[i] == '^'){            
             number = false;
             count++;
             how_many++;
             oper_length++;
             so = true;
+            prak = false;
             op = 0;
             if (inp[i] == '+'){
                 oper[0]++;
@@ -696,9 +784,13 @@ bool errors(char inp[]){
                 oper[3]++;
             }else if (inp[i] == '^'){
                 oper[4]++;
-            }else if (inp[i] == '(' || inp[i] == ')'){
-                oper[5]++;
             }
+        }else if(inp[i] == '(' || inp[i] == ')'){
+            prak = true;
+            how_many++;
+            oper_length++;
+            prak_count++;
+            oper[5]++;
         }else if(inp[i] == ' '){
             if (so == false){
                 op++;
@@ -709,10 +801,10 @@ bool errors(char inp[]){
             error = true;
         }
         
-        if (how_many > num && num == 0){
+        if (how_many > (num + prak_count) && num == 0 && prak == false){
             std::cout << "Error: operation in the start " << inp[i] << std::endl;
             error = true;
-        }else if (how_many == num && i == length - 1){
+        }else if (how_many == (num + prak_count) && i == length - 1 && prak == false){
             std::cout << "Error: operation in the end " << inp[i] << std::endl;
             error = true;
         }else if (number == false && count >= 2){
