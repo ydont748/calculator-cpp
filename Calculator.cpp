@@ -55,6 +55,10 @@ int substract(int first, int second){
 
 double change(char inp[]);
 
+double change(char inp[], int end);
+
+double looking(char inp[], int end);
+
 int looking(char inp[]);
 
 double four(double first, double second){
@@ -172,13 +176,13 @@ double idk(double numbers[], int oper[]){
     return numbers[0];
 }
 
-std::tuple<double, int> quowsin(double numbers[], int oper[], int start, int end){
+std::tuple<double, int> quowsin(double numbers[], int oper[], int start, int end, int n_c){
     int john = how_many;
 
     for (int j = 3; j > 0; j--){
-        for (int i = end - 1; i >= start; i--){
-            // std::cout << "enter loop " << i << std::endl;
-            //std::cout << "oper  " << oper[i] << std::endl;
+        for (int i = end - 1; i > start; i--){
+            std::cout << "enter loop " << i << std::endl;
+            // std::cout << "oper  " << oper[i] << std::endl;
             // std::cout << "how many  " << how_many << std::endl;
             if(oper[i] == 5 && j == 3){
                 numbers[i] = pow(numbers[i], numbers[i + 1]);
@@ -519,6 +523,7 @@ std::tuple<double, int, int ,int ,int, int> oper_parantheses(char all[], double 
     int sum;
     int end;
     bool multi = false;
+    int count = 0;
     double num;
     while (val != 0){
         if(all[i] >= 48 && all[i] <= 57){
@@ -529,6 +534,7 @@ std::tuple<double, int, int ,int ,int, int> oper_parantheses(char all[], double 
             prak = false;
         }else if(all[i] == '('){
             start = i;
+            count++;
             if (number == true && prak == false){
                 multi = true;
             }else if (prak == true){
@@ -542,7 +548,29 @@ std::tuple<double, int, int ,int ,int, int> oper_parantheses(char all[], double 
             // }else{
             //     auto[num, sum] = quowsin(numbers, opera, start + 1, i);
             // }
-            auto[num, sum] = quowsin(numbers, opera, start + 1, i);
+            
+            int tt = 0;
+            while (tt != how_many){
+                if (opera[tt] == 6){
+                    count--;
+                    if (count == 0){
+                        start = tt;
+                        break;
+                    }
+                }
+                tt++;
+            }
+
+            while (tt != how_many){
+                if (opera[tt] == 7){
+                    end = tt;
+                    break;
+                }
+                tt++;
+            }
+            
+            // std::cout << "start: " << start << " end: " << end << std::endl;
+            auto[num, sum] = quowsin(numbers, opera, start, end, end);
             
             val-=2;
             number = false;
@@ -553,6 +581,7 @@ std::tuple<double, int, int ,int ,int, int> oper_parantheses(char all[], double 
                 return {num, start, i, opera[start], start, sum};
             }
         }
+        
         i++;
     }
     
@@ -616,7 +645,7 @@ int main(){
     if(oper[5] != 0){
         // std::cout << "enter parantheses" << std::endl;
         auto [val_n, sn, e, op_val, so, eh] = oper_parantheses(in, value, the);
-        std::cout << "the val_n is: " << val_n << " sn: " << sn << " e: " << e << " op_val: " << op_val << " so: " << so <<std::endl;
+        // std::cout << "the val_n is: " << val_n << " sn: " << sn << " e: " << e << " op_val: " << op_val << " so: " << so <<std::endl;
         value[sn] = val_n;
         // std::cout << "the how many is: " << how_many - e << std::endl;
         for (int i = 1; i < eh; i++){
@@ -637,12 +666,14 @@ int main(){
         how_many = eh;
     }
 
+    /*
     std::cout << "number 0: " << value[0] << std::endl;
     std::cout << "number 1: " << value[1] << std::endl;
     std::cout << "number 2: " << value[2] << std::endl;
     std::cout << "oper 0: " << the[0] << std::endl;
     std::cout << "oper 1: " << the[1] << std::endl; 
     std::cout << "how many: " << how_many << std::endl;
+    */
 
     /*
     while (oper[6] != 0){
@@ -726,9 +757,61 @@ int looking(char inp[]){
     return then;
 }
 
+double looking(char inp[], int end){
+    int then = 0;
+    for (size_t i = ind; i < end; i++){
+        if (inp[i] == '+'){
+            then = 1;
+            ind = i + 1;
+            break;
+        }else if(inp[i] == '-'){
+            then = 2;
+            ind = i + 1;
+            break;
+        }else if(inp[i] == '*'){
+            then = 3;
+            ind = i + 1;
+            break;
+        }else if(inp[i] == '/'){
+            then = 4;
+            ind = i + 1;
+            break;
+        }else if(inp[i] == '^'){
+            then = 5;
+            ind = i + 1;
+            break;
+        }else if(inp[i] == '('){
+            then = 6;
+            ind = i + 1;
+            break;
+        }else if(inp[i] == ')'){
+            then = 7;
+            ind = i + 1;
+            break;
+        }
+    }
+
+    return then;
+}
+
 double change(char inp[]){
     int val = 0;
     for (size_t i = ind; i < length; i++){
+        if (inp[i] >= 48 && inp[i] <= 57){
+            val = val * 10;
+            val = val + inp[i] - 48;
+        }else if(inp[i] == '+' || inp[i] == '-' || inp[i] == '*' || inp[i] == '/' || inp[i] == '^'){
+            ind = i + 1;
+            break;
+        }
+    }
+
+    return val;
+}
+
+double change(char inp[], int end){
+    int val = 0;
+    for (size_t i = ind; i < end; i++){
         if (inp[i] >= 48 && inp[i] <= 57){
             val = val * 10;
             val = val + inp[i] - 48;
