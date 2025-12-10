@@ -12,33 +12,31 @@ int count = 0;
 
 bool errors(char inp[]);
 
-class node{
+struct node{
     public:
     double number;
     int operation;
     bool num;
     node* next;
     node* pre;
-    node(double numb, int oper, bool n){
-        next = nullptr;
-        pre = nullptr;
-        number = numb;
-        operation = oper;
-        num = n;
+    node(){
     }
 };
 
 double change(char inp[]){
+    // std::cout << "enter the change" << std::endl;
     double val = 0;
     for (size_t i = ind; i < length; i++){
         if (inp[i] >= 48 && inp[i] <= 57){
             val = val * 10;
             val = val + inp[i] - 48;
+            // std::cout << "number loop ?" << std::endl;
         }else if(inp[i] == '+' || inp[i] == '-' || inp[i] == '*' || inp[i] == '/' || inp[i] == '^' || inp[i] == '(' || inp[i] == ')'){
             ind = i;
             break;
         }
     }
+    // std::cout << "leave the change" << std::endl;
     return val;
 }
 
@@ -153,11 +151,17 @@ int main(){
     
     length = input.length();
     
-    char in[length + 1];
+    // char in[length + 1];
+
+    char* in = new char[length + 1]; // Dynamic allocation
+    std::strcpy(in, input.c_str());
+
+    // std::vector<char> in(input.begin(), input.end());
+    // in.push_back('\0');
 
     //int done[length + 1];
 
-    strcpy(in, input.c_str());
+    // strcpy(in, input.c_str());
     
     // this part is to check for errors in the input
     bool error = errors(in);
@@ -177,17 +181,28 @@ int main(){
 
     
     for (size_t i = 0; i < thelength; i++){
-        node* tmp;
+        std::cout << "enter the loop " << std::endl;
+        node* tmp= new node();
         if (in[i] >= 48 && in[i] <= 57){
+            std::cout << "enter the number " << std::endl;
             tmp->number = change(in);
+            std::cout << "wtf ? " << std::endl;
             tmp->operation = 0;
             tmp->num = true;
             doingsomething = true;
             tmp->pre = tail;
+            if (tail != NULL) {
+                tail->next = tmp;
+            } else {
+                head = tmp; // If there is no tail, this is the first node (head)
+            }
+            tail = tmp;
             tail->next = tmp;
             tail = tmp;
             count++;
+            std::cout << "leave the number " << std::endl;
         }else if (in[i] == '+' || in[i] == '-' || in[i] == '*' || in[i] == '/' || in[i] == '^' || in[i] == '(' || in[i] == ')'){
+            std::cout << "enter the oper " << std::endl;
             tmp->number = 0;
             tmp->operation = looking(in);
             tmp->num = false;
@@ -196,20 +211,24 @@ int main(){
             tail->next = tmp;
             tail = tmp;
             count++;
+            std::cout << "leave the oper " << std::endl;
         }else{
             ind++;
         }
+        std::cout << "come here " << std::endl;
         
         if (ifempty == true && doingsomething == true){
             head = tmp;
             ifempty = false;
         }
+        std::cout << "after the if " << std::endl;
         
         i = ind;
+        //std::cout << "what is the ind: " << ind << std::endl;
     }
     
     std::cout << "it was here" << std::endl;
-    
+
     int count_of_op = 0;
     while (oper[5] != 0){
         node* tmp = head;
