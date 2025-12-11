@@ -17,10 +17,8 @@ struct node{
     double number;
     int operation;
     bool num;
-    node* next;
-    node* pre;
-    node(){
-    }
+    node* next = NULL;
+    node* pre = NULL;
 };
 
 double change(char inp[]){
@@ -36,6 +34,11 @@ double change(char inp[]){
             break;
         }
     }
+
+    if (ind == length - 1){
+        ind++;
+    }
+    
     // std::cout << "leave the change" << std::endl;
     return val;
 }
@@ -89,50 +92,68 @@ std::tuple<double, int, bool> all(int the_count, node* the_start, node* the_end)
                 double sum = pow(num1, num2);
                 pre->number = sum;
                 pre->next = next->next;
-                next->next->pre = pre;
-                tmp = next->next;
+                if (next->next != NULL){
+                    next->next->pre = pre;
+                    tmp = next->next;
+                }
             }else if(tmp->operation == 3 && j == 1){
+                // std::cout << "here" << std::endl;
                 double num1 = pre->number;
                 double num2 = next->number;
                 double sum = num1 * num2;
                 pre->number = sum;
                 pre->next = next->next;
-                next->next->pre = pre;
-                tmp = next->next;
+                if (next->next != NULL){
+                    next->next->pre = pre;
+                    tmp = next->next;
+                }
             }else if(tmp->operation == 4 && j == 1){
                 double num1 = pre->number;
                 double num2 = next->number;
                 double sum = num1 / num2;
                 pre->number = sum;
                 pre->next = next->next;
-                next->next->pre = pre;
-                tmp = next->next;
+                if (next->next != NULL){
+                    next->next->pre = pre;
+                    tmp = next->next;
+                }
             }else if (tmp->operation == 2 && j == 2){
                 double num1 = pre->number;
                 double num2 = next->number;
                 double sum = num1 - num2;
                 pre->number = sum;
                 pre->next = next->next;
-                next->next->pre = pre;
-                tmp = next->next;
+                if (next->next != NULL){
+                    next->next->pre = pre;
+                    tmp = next->next;
+                }
             }else if (tmp->operation == 1 && j == 2){
+                // std::cout << "enter the 1" << std::endl;
                 double num1 = pre->number;
                 double num2 = next->number;
                 double sum = num1 + num2;
                 pre->number = sum;
                 pre->next = next->next;
-                next->next->pre = pre;
-                tmp = next->next;
+                if (next->next != NULL){
+                    next->next->pre = pre;
+                    tmp = next->next;
+                }
+                // std::cout << "wtf? " << std::endl;
             }
             if (tmp == the_end){
                 break;
             }
         }
+        // std::cout << "the count of the j: " << j << std::endl;
     }
 
-    double n = the_start->next->number;
-    int t = the_start->next->operation;
-    bool s = the_start->next->num;
+    // std::cout << "the end of the for for loop " << std::endl;
+    
+    double n = the_start->number;
+    int t = the_start->operation;
+    bool s = the_start->num;
+    
+    // std::cout << "the n " << n << "the t " << t << "the s " << s << std::endl;
 
     return {n, t, s};
 }
@@ -180,13 +201,12 @@ int main(){
     int thelength = length;
 
     
-    for (size_t i = 0; i < thelength; i++){
-        std::cout << "enter the loop " << std::endl;
+    while(ind < thelength){
+        // std::cout << "enter the loop " << std::endl;
         node* tmp= new node();
-        if (in[i] >= 48 && in[i] <= 57){
-            std::cout << "enter the number " << std::endl;
+        if (in[ind] >= 48 && in[ind] <= 57){
+            // std::cout << "enter the number " << std::endl;
             tmp->number = change(in);
-            std::cout << "wtf ? " << std::endl;
             tmp->operation = 0;
             tmp->num = true;
             doingsomething = true;
@@ -196,38 +216,36 @@ int main(){
             } else {
                 head = tmp; // If there is no tail, this is the first node (head)
             }
-            tail = tmp;
-            tail->next = tmp;
+            // std::cout << "wtf ? " << std::endl;
             tail = tmp;
             count++;
-            std::cout << "leave the number " << std::endl;
-        }else if (in[i] == '+' || in[i] == '-' || in[i] == '*' || in[i] == '/' || in[i] == '^' || in[i] == '(' || in[i] == ')'){
-            std::cout << "enter the oper " << std::endl;
+            // std::cout << "leave the number " << std::endl;
+        }else if (in[ind] == '+' || in[ind] == '-' || in[ind] == '*' || in[ind] == '/' || in[ind] == '^' || in[ind] == '(' || in[ind] == ')'){
+            // std::cout << "enter the oper " << std::endl;
             tmp->number = 0;
             tmp->operation = looking(in);
             tmp->num = false;
             doingsomething = true;
             tmp->pre = tail;
-            tail->next = tmp;
+            if (tail != NULL) {
+                tail->next = tmp;
+            } else {
+                head = tmp; // If there is no tail, this is the first node (head)
+            }
             tail = tmp;
             count++;
-            std::cout << "leave the oper " << std::endl;
+            // std::cout << "leave the oper " << std::endl;
         }else{
             ind++;
         }
-        std::cout << "come here " << std::endl;
+
+        // std::cout << "come here " << std::endl;
         
-        if (ifempty == true && doingsomething == true){
-            head = tmp;
-            ifempty = false;
-        }
-        std::cout << "after the if " << std::endl;
-        
-        i = ind;
-        //std::cout << "what is the ind: " << ind << std::endl;
+        //i = ind;
+        // std::cout << "what is the ind: " << ind << std::endl;
     }
     
-    std::cout << "it was here" << std::endl;
+    // std::cout << "it was here" << std::endl;
 
     int count_of_op = 0;
     while (oper[5] != 0){
@@ -263,6 +281,8 @@ int main(){
         oper[5] = oper[5] - 2;
         count = count - count_of_op - 2;
     }
+
+    // std::cout << "after the loop" << std::endl;
     
 
     auto [sum, t, s] = all(count, head, tail);
